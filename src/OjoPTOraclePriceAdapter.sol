@@ -5,7 +5,7 @@ import {IPTOracle} from "./interfaces/IPTOracle.sol";
 import {MinimalAggregatorV3Interface} from "./interfaces/MinimalAggregatorV3Interface.sol";
 
 contract OjoPTOraclePriceAdapter is MinimalAggregatorV3Interface {
-    uint8 public decimals;
+    uint8 public constant decimals = 18;
 
     address public immutable PTOracle;
 
@@ -13,8 +13,11 @@ contract OjoPTOraclePriceAdapter is MinimalAggregatorV3Interface {
 
     string public description;
 
+    /// @notice thrown when the Pendle market decimals are not 18
+    uint256 internal constant OjoPTOraclePriceAdapter__MarketDecimalsNotSupported = 10_000;
+
     /// @notice thrown when the Pendle market Oracle has not been initialized yet
-    uint256 internal constant PendleOracle__MarketNotInitialized = 10_000;
+    uint256 internal constant OjoPTOraclePriceAdapter__MarketNotInitialized = 10_001;
 
     error OjoPTOraclePriceAdapterError(uint256 errorId_);
 
@@ -25,7 +28,9 @@ contract OjoPTOraclePriceAdapter is MinimalAggregatorV3Interface {
         PTOracle = _ptoracle;
         market = _market;
         description = _description;
-        decimals = MinimalAggregatorV3Interface(_market).decimals();
+        if (MinimalAggregatorV3Interface(_market).decimals() != decimals) {
+            revert OjoPTOraclePriceAdapterError(OjoPTOraclePriceAdapter__MarketDecimalsNotSupported);
+        }
 
         IPTOracle oracle = IPTOracle(PTOracle);
 
@@ -37,7 +42,7 @@ contract OjoPTOraclePriceAdapter is MinimalAggregatorV3Interface {
             if (increaseCardinalityRequired_ || !oldestObservationSatisfied_) {
                 // ensure pendle market Oracle is ready and initialized see
                 // https://docs.pendle.finance/Developers/Oracles/HowToIntegratePtAndLpOracle
-                revert OjoPTOraclePriceAdapterError(PendleOracle__MarketNotInitialized);
+                revert OjoPTOraclePriceAdapterError(OjoPTOraclePriceAdapter__MarketNotInitialized);
             }
         }
     }
