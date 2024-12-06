@@ -26,12 +26,7 @@ contract OjoPTOraclePriceAdapter is MinimalAggregatorV3Interface {
         market = _market;
         description = _description;
         decimals = MinimalAggregatorV3Interface(_market).decimals();
-    }
 
-    /// @inheritdoc MinimalAggregatorV3Interface
-    /// @dev Returns zero for roundId, startedAt, updatedAt and answeredInRound.
-    /// @dev Silently overflows if `price`'s average is greater than `type(int256).max`.
-    function latestRoundData() external view returns (uint80, int256, uint256, uint256, uint80) {
         IPTOracle oracle = IPTOracle(PTOracle);
 
         {
@@ -45,6 +40,13 @@ contract OjoPTOraclePriceAdapter is MinimalAggregatorV3Interface {
                 revert OjoPTOraclePriceAdapterError(PendleOracle__MarketNotInitialized);
             }
         }
+    }
+
+    /// @inheritdoc MinimalAggregatorV3Interface
+    /// @dev Returns zero for roundId, startedAt, updatedAt and answeredInRound.
+    /// @dev Silently overflows if `price`'s average is greater than `type(int256).max`.
+    function latestRoundData() external view returns (uint80, int256, uint256, uint256, uint80) {
+        IPTOracle oracle = IPTOracle(PTOracle);
 
         uint256 price = oracle.getPtToAssetRate(
             market,
