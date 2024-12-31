@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity ^0.8.19;
 
-contract OjoPendleOracle2 {
+contract OjoPendleOracleV2 {
     uint256 private constant SECONDS_PER_YEAR = 365 days;
     uint256 private constant ONE = 1e18;
 
