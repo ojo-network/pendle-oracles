@@ -3,6 +3,7 @@ pragma solidity 0.8.19;
 
 import {Script} from "forge-std/Script.sol";
 import {OjoPendleOracle} from "src/OjoPendleOracle.sol";
+import {OjoPendleOracle2} from "src/OjoPendleOracle2.sol";
 import {OjoPTOraclePriceAdapter} from "src/OjoPTOraclePriceAdapter.sol";
 import {console} from "forge-std/console.sol";
 import {IPTOracle} from "src/interfaces/IPTOracle.sol";
@@ -19,6 +20,21 @@ contract DeployOjoPendleOracle is Script {
         vm.stopBroadcast();
 
         console.log("OjoPendleOracle Address:", address(ojoPendleOracle));
+    }
+}
+
+contract DeployOjoPendleOracle2 is Script {
+    function run() external {
+        address _pt = vm.envAddress("PT_ADDRESS");
+        uint256 _baseDiscountPerYear = vm.envUint("BASE_DISCOUNT_PER_YEAR");
+
+        vm.startBroadcast();
+
+        OjoPendleOracle2 ojoPendleOracle2 = new OjoPendleOracle2(_pt, _baseDiscountPerYear);
+
+        vm.stopBroadcast();
+
+        console.log("OjoPendleOracle2 Address:", address(ojoPendleOracle2));
     }
 }
 
